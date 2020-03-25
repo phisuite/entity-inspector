@@ -9,13 +9,13 @@ import (
 )
 
 type entityServer struct {
-	data.UnimplementedEntityAPIServer
+	data.UnimplementedEntityReadAPIServer
 }
 
-func (e entityServer) List(_ *data.Options, stream data.EntityAPI_ListServer) error {
+func (e entityServer) List(_ *data.Options, stream data.EntityReadAPI_ListServer) error {
 	for i := 1; i < 5; i++ {
 		version := fmt.Sprintf("0.0.%d", i)
-		entity := &data.Entity{Name:"dummy", Version:version}
+		entity := &data.Entity{Name: "dummy", Version: version}
 		log.Printf("Stream: %v", entity)
 		if err := stream.Send(entity); err != nil {
 			return err
@@ -25,13 +25,13 @@ func (e entityServer) List(_ *data.Options, stream data.EntityAPI_ListServer) er
 }
 
 func (e entityServer) Get(context.Context, *data.Options) (*data.Entity, error) {
-	entity := &data.Entity{Name:"dummy", Version:"0.0.1"}
+	entity := &data.Entity{Name: "dummy", Version: "0.0.1"}
 	log.Printf("Send: %v", entity)
 	return entity, nil
 }
 
 func main() {
 	api := grpc.New()
-	data.RegisterEntityAPIServer(api.Server, &entityServer{})
+	data.RegisterEntityReadAPIServer(api.Server, &entityServer{})
 	api.Start()
 }
